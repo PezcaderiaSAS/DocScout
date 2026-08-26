@@ -1,0 +1,18 @@
+
+# Entorno de agentes locales
+.agents/tools/
+node_modules/
+
+# Python & testing
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Dossiers generados en pruebas
+output/

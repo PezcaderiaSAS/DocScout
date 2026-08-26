@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docscout"
+version = "1.0.0"
+description = "Automatizador de Documentación Oficial para Google NotebookLM y Servidor MCP para Gemini"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Antigravity AI" }
+]
+dependencies = [
+    "typer>=0.9.0",
+    "rich>=13.0.0",
+    "beautifulsoup4>=4.12.0",
+    "trafilatura>=1.6.0",
+    "lxml>=4.9.0",
+    "duckduckgo-search>=6.0.0",
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0",
+    "fastmcp>=0.1.0",
+    "pyyaml>=6.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0"
+]
+
+[project.scripts]
+docscout = "docscout.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
