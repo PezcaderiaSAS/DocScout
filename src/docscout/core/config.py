@@ -111,6 +111,16 @@ OFFICIAL_DOMAINS_CATALOG: Dict[str, Set[str]] = {
         "huggingface.co",
         "modelcontextprotocol.io",
         "crawl4ai.com",
+    },
+    "architecture_standards": {
+        "patterns.dev",
+        "single-spa.js.org",
+        "micro-frontends.org",
+        "owasp.org",
+        "cheatsheetseries.owasp.org",
+        "martinfowler.com",
+        "12factor.net",
+        "auth0.com",
     }
 }
 

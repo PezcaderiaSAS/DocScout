@@ -25,9 +25,9 @@ class SearchEngine:
         if tech_filter and tech_filter.lower() not in clean_query.lower():
             additions.append(tech_filter)
 
-        # Si el usuario no especificó la palabra 'docs' ni 'documentation', la agregamos
-        if not re.search(r"\b(doc|docs|documentation|guide|manual|api|tutorial|reference)\b", clean_query, re.IGNORECASE):
-            additions.append("official documentation")
+        # Si el usuario no especificó la palabra 'docs' ni 'documentation' ni 'guia' ni 'manual'
+        if not re.search(r"\b(doc|docs|documentation|guide|guia|manual|api|tutorial|reference|arquitectura|architecture)\b", clean_query, re.IGNORECASE):
+            additions.append("docs")
 
         if additions:
             return f"{clean_query} {' '.join(additions)}".strip()
@@ -39,7 +39,7 @@ class SearchEngine:
         query: str,
         max_results: int = 10,
         tech_filter: Optional[str] = None,
-        min_confidence: float = 0.40,
+        min_confidence: float = 0.35,
     ) -> List[SearchResultItem]:
         """Ejecuta una búsqueda en DuckDuckGo y filtra los resultados priorizando fuentes oficiales.
 
@@ -54,35 +54,40 @@ class SearchEngine:
         """
         optimized_query = cls.build_search_query(query, tech_filter=tech_filter)
         raw_items: List[SearchResultItem] = []
+        seen_urls = set()
 
-        try:
-            # Consultar DuckDuckGo usando la API libre DDGS
-            with DDGS() as ddgs:
-                # Solicitamos el doble para tener suficiente margen tras el filtrado
-                results_generator = ddgs.text(
-                    optimized_query,
-                    max_results=max(max_results * 2, 10),
-                )
-                
-                for item in results_generator:
-                    url = item.get("href") or item.get("url") or ""
-                    title = item.get("title") or "Sin título"
-                    snippet = item.get("body") or item.get("snippet") or ""
-
-                    if not url or not url.startswith("http"):
-                        continue
-
-                    raw_items.append(
-                        SearchResultItem(
-                            title=title,
-                            url=url,
-                            snippet=snippet,
-                        )
+        def _fetch_from_ddg(search_term: str, target_count: int) -> None:
+            try:
+                with DDGS() as ddgs:
+                    results_gen = ddgs.text(
+                        search_term,
+                        max_results=target_count,
                     )
-        except Exception as e:
-            # Manejo de error de red o timeout
-            print(f"[Aviso SearchEngine] Fallo temporal en búsqueda remota: {e}")
-            return []
+                    for item in results_gen:
+                        url = item.get("href") or item.get("url") or ""
+                        title = item.get("title") or "Sin título"
+                        snippet = item.get("body") or item.get("snippet") or ""
+
+                        if not url or not url.startswith("http") or url in seen_urls:
+                            continue
+
+                        seen_urls.add(url)
+                        raw_items.append(
+                            SearchResultItem(
+                                title=title,
+                                url=url,
+                                snippet=snippet,
+                            )
+                        )
+            except Exception as e:
+                pass
+
+        # 1. Búsqueda principal
+        _fetch_from_ddg(optimized_query, max(max_results * 5, 25))
+
+        # 2. Si no hay suficientes, búsqueda complementaria directa
+        if len(raw_items) < max_results * 2:
+            _fetch_from_ddg(f"{query} architecture guide", max(max_results * 3, 15))
 
         # Filtrar y ordenar por puntuación de confianza oficial
         ranked_results = DomainFilter.filter_and_rank(
@@ -90,5 +95,13 @@ class SearchEngine:
             min_confidence=min_confidence,
             prioritize_official=True,
         )
+
+        # Si el filtro estricto no arrojó resultados, relajar levemente el umbral (evitando spam/agregadores)
+        if not ranked_results and raw_items:
+            ranked_results = DomainFilter.filter_and_rank(
+                raw_items,
+                min_confidence=0.25,
+                prioritize_official=True,
+            )
 
         return ranked_results[:max_results]
