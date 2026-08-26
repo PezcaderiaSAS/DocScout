@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "docscout": {
+      "command": "C:\\Python313\\python.exe",
+      "args": [
+        "-m",
+        "docscout.mcp.server"
+      ],
+      "env": {
+        "PYTHONPATH": "C:\\Users\\usuario\\OneDrive\\Documentos\\Aplicaciones Pezca\\DocumentacionesOficiales\\src"
+      }
+    }
+  }
+}
