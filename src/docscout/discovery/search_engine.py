@@ -87,7 +87,7 @@ class SearchEngine:
 
         # 2. Si no hay suficientes, búsqueda complementaria directa
         if len(raw_items) < max_results * 2:
-            _fetch_from_ddg(f"{query} architecture guide", max(max_results * 3, 15))
+            _fetch_from_ddg(f"{query} UI design system", max(max_results * 4, 20))
 
         # Filtrar y ordenar por puntuación de confianza oficial
         ranked_results = DomainFilter.filter_and_rank(
@@ -96,11 +96,11 @@ class SearchEngine:
             prioritize_official=True,
         )
 
-        # Si el filtro estricto no arrojó resultados, relajar levemente el umbral (evitando spam/agregadores)
+        # Si el filtro estricto no arrojó resultados, relajar levemente el umbral
         if not ranked_results and raw_items:
             ranked_results = DomainFilter.filter_and_rank(
                 raw_items,
-                min_confidence=0.25,
+                min_confidence=0.15,
                 prioritize_official=True,
             )
 
