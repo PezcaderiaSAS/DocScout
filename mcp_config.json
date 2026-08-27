@@ -1,13 +1,13 @@
 {
   "mcpServers": {
     "docscout": {
-      "command": "C:\\Python313\\python.exe",
+      "command": "c:\\Users\\Personal\\Documents\\FRIOSPEZCADERIA\\FerreOn\\.agents\\plugins\\DocScout\\.venv\\Scripts\\python.exe",
       "args": [
         "-m",
         "docscout.mcp.server"
       ],
       "env": {
-        "PYTHONPATH": "C:\\Users\\usuario\\OneDrive\\Documentos\\Aplicaciones Pezca\\DocumentacionesOficiales\\src"
+        "PYTHONPATH": "c:\\Users\\Personal\\Documents\\FRIOSPEZCADERIA\\FerreOn\\.agents\\plugins\\DocScout\\src"
       }
     }
   }
